@@ -53,7 +53,7 @@ while getopts s:f:h:t:? ARG; do
 			site=$OPTARG
 			;;
 		f)
-			folder=$OPTARG
+			folder=$( echo $OPTARG | tr [:upper:] [:lower:] )
 			;;
 		h)
 			hostname=$OPTARG

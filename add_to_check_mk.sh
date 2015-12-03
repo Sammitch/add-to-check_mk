@@ -91,8 +91,24 @@ else
 	mk_file="/opt/omd/sites/${site}/etc/check_mk/conf.d/wato/${folder}/hosts.mk"
 fi
 
-## Check file existence
+## Check for folder and file existence
 if [ ! -f "$mk_file" ]; then
+
+	## check if folder exists and it it does not, create with defaults
+	IFS='/' read -ra folder_array <<< "$folder"
+	full_folder='wato'
+	for folder_name in "${folder_array[@]}"; do
+		## append folder to parent
+		full_folder+="/$folder_name"
+		if [ ! -d "${full_folder}" ]; then
+			## create folder
+			mkdir "${full_folder}"
+			## create .wato file with defaults
+			echo "{'attributes': {}, 'num_hosts': 0, 'title': u'${folder_name}'}" > "$full_folder"/.wato
+		fi
+	done
+
+	## create hosts.mk file if it does not exist and set correct ownership
 	echo "WARN: File $mk_file does not currently exist, it will be created."
 	touch $mk_file && chown ${site}:${site} $mk_file
 fi
